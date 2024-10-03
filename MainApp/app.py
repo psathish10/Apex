@@ -240,7 +240,7 @@ def push_data_to_database(df, source):
 
 def main():
     # Display the company logo in the sidebar
-    st.sidebar.image("toolfe.webp", use_column_width=False, width=50)
+   
     
     st.title("Apex Lab's Data Processor - Demo")
     
