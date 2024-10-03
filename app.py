@@ -1,17 +1,16 @@
-# excel.py
-
 import streamlit as st
 import pandas as pd
 from openpyxl import load_workbook
 import mysql.connector
-from db_config import DB_CONFIG
+from mysql.connector import Error
 
-# Define the column mapping for Excel
+# Define the column mapping
 column_mapping = {
-    'Customer Name': 'Stockist_Name',
+    'Customer Name':'Stockist_Name',
     'Bill No': 'Bill_No',
     'Bill Date': 'Bill_Date',
     'Cust Code': 'Chemist_Code',
+    # 'Mfr Name': '',
     'Product Name': 'Material_Name',
     'Qty': 'Sale_Qty',
     'Free': 'Free_Qty',
@@ -26,80 +25,122 @@ column_mapping = {
 
 # Function to validate the columns against the mapping
 def validate_columns(df):
-    missing_columns = [col for col in column_mapping.keys() if col not in df.columns]
+    missing_columns = []
+    for excel_col in column_mapping.keys():
+        if excel_col not in df.columns:
+            missing_columns.append(excel_col)
     return missing_columns
 
-# Extract tables from Excel and insert data
+# Function to extract tables from Excel and display data
 def extract_excel_tables(file):
     try:
+        # Load the Excel file using openpyxl
         workbook = load_workbook(file)
         sheet_names = workbook.sheetnames
 
+        # Select a sheet to extract tables from
         st.write("Available sheets in the Excel file:")
         selected_sheet = st.selectbox("Select a sheet", sheet_names)
+        
+        # Load the selected sheet
         sheet = workbook[selected_sheet]
-
+        
+        # Extract the tables (if any) within the selected sheet
         if sheet.tables:
             table_names = list(sheet.tables.keys())
+            st.write(f"Tables in the '{selected_sheet}' sheet:")
             selected_table = st.selectbox("Select a table", table_names)
+            
+            # Extract the table range
             table_range = sheet.tables[selected_table].ref
+            
+            # Extract the cell values from the table range
             data = sheet[table_range]
             table_data = [[cell.value for cell in row] for row in data]
-            df = pd.DataFrame(table_data[1:], columns=table_data[0])
 
+            # Create a DataFrame using the extracted data
+            df = pd.DataFrame(table_data[1:], columns=table_data[0])  # Use the first row as column headers
+            
+            # Validate columns
             missing_columns = validate_columns(df)
             if missing_columns:
-                st.warning(f"Missing columns: {', '.join(missing_columns)}")
+                st.warning(f"Missing columns in the uploaded table: {', '.join(missing_columns)}")
             else:
+                # Display table data
+                st.write(f"Data from table '{selected_table}':")
+                st.dataframe(df)
+
+                # Convert 'Bill Date' to the correct format
                 df['Bill Date'] = pd.to_datetime(df['Bill Date'], format='%d/%m/%Y', errors='coerce').dt.strftime('%Y-%m-%d')
-                if st.button("Insert Excel Data"):
-                    insert_excel_data_into_db(df)
+
+                # Insert data into MySQL
+                if st.button("Insert Data into MySQL"):
+                    # Define MySQL connection parameters
+                    db_config = {
+                        'host': 'localhost',
+                        'user': 'root',
+                        'password': '',
+                        'database': 'apex'
+                    }
+
+                    # Prepare SQL insert query
+                    insert_query = """
+                    INSERT INTO salesdata (Stockist_Code, Stockist_Name, Bill_No, Bill_Date, Chemist_Code, 
+                                                  Chemist_Name, Address, City, Pin_Code, Material_Code, 
+                                                  Material_Name, Batch_No, Sale_Qty, Free_Qty, Rate, Value)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    """
+                    
+                    for index, row in df.iterrows():
+                        # Prepare values based on the mapping
+                        values = (
+                            row.get('Cust Code'),  # Adjust based on your actual Excel column names
+                            row.get('Customer Name'),
+                            row.get('Bill No'),
+                            row.get('Bill Date'),  # This will now be in the correct format
+                            'Chemist Code',  # Ensure to fetch actual chemist code
+                            "Chemist Name",  # Ensure to fetch actual chemist name
+                            row.get('Address'),
+                            row.get('Area Name'),
+                            row.get('Pin Code'),
+                            'Material Code',  # Ensure to fetch actual material code
+                            row.get('Product Name'),
+                            row.get('Batch No'),
+                            row.get('Qty'),
+                            row.get('Free'),
+                            row.get('Rate'),
+                            row.get('Amount'),
+                        )
+                        
+                        try:
+                            # Insert the validated data into MySQL
+                            connection = mysql.connector.connect(**db_config)
+                            cursor = connection.cursor()
+                            cursor.execute(insert_query, values)
+                            connection.commit()
+                            st.success(f"Inserted row {index + 1} successfully!")
+                        except Error as e:
+                            st.error(f"Error inserting row {index + 1}: {e}")
+                        finally:
+                            if connection.is_connected():
+                                cursor.close()
+                                connection.close()
         else:
-            st.write("No tables found in the sheet.")
+            st.write(f"No tables found in the '{selected_sheet}' sheet.")
+        
     except Exception as e:
-        st.error(f"Error: {e}")
+        st.error(f"Error occurred: {e}")
 
-# Insert data into MySQL from Excel
-def insert_excel_data_into_db(df):
-    try:
-        connection = mysql.connector.connect(**DB_CONFIG)
-        cursor = connection.cursor()
+# Main function for Streamlit app
+def main():
+    st.title("Excel Table Extractor and SQL Inserter")
+    
+    # File uploader in Streamlit
+    file = st.file_uploader("Upload your Excel file", type=["xlsx"])
 
-        insert_query = """
-        INSERT INTO salesdata (Stockist_Code, Stockist_Name, Bill_No, Bill_Date, Chemist_Code, Chemist_Name, Address, City, Pin_Code, Material_Code, Material_Name, Batch_No, Sale_Qty, Free_Qty, Rate, Value)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
+    # Extract and display tables when a file is uploaded
+    if file is not None:
+        extract_excel_tables(file)
 
-        success_count = 0
-        for _, row in df.iterrows():
-            values = (
-                row.get('Cust Code', None),
-                'KAMALAM MEDICAL CORPORATION',
-                row.get('Bill No', None),
-                row.get('Bill Date', None),
-                'Chemist Code',
-                row.get('Customer Name', None),
-                row.get('Address', None),
-                row.get('Area Name', None),
-                row.get('Pin Code', None),
-                'Material Code',
-                row.get('Product Name', None),
-                row.get('Batch No', None),
-                row.get('Qty', None),
-                row.get('Free', None),
-                row.get('Rate', None),
-                row.get('Amount', None)
-            )
-            values = tuple(v if pd.notna(v) else None for v in values)
-            try:
-                cursor.execute(insert_query, values)
-                connection.commit()
-                success_count += 1
-            except mysql.connector.Error as e:
-                st.error(f"Error inserting row: {e}")
-
-        st.success(f"Inserted {success_count} rows successfully.")
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
+if __name__ == "__main__":
+    main()
