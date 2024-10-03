@@ -1,0 +1,9 @@
+streamlit
+pandas
+openpyxl
+mysql-connector-python
+pdfplumber
+pywin32
+xlrd
+fuzzywuzzy
+python-Levenshtein
