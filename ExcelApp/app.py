@@ -78,10 +78,9 @@ def extract_excel_tables(file):
                     # Define MySQL connection parameters
                     db_config = {
                         'host': 'localhost',
-                        'user': 'root',
-                        'port':"3306",
-                        'password': '',
-                        'database': 'apex'
+                        'user': 'u840048117_Apex_demo',
+                        'password': 'Toolfe@min10!',
+                        'database': 'u840048117_Apex_demo'
                     }
 
                     # Prepare SQL insert query
