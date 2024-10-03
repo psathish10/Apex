@@ -77,7 +77,7 @@ def extract_excel_tables(file):
                 if st.button("Insert Data into MySQL"):
                     # Define MySQL connection parameters
                     db_config = {
-                        'host': 'localhost',
+                        'host': 'srv1508.hstgr.io',
                         'user': 'u840048117_Apex_demo',
                         'password': 'Toolfe@min10!',
                         'database': 'u840048117_Apex_demo'
