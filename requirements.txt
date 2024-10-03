@@ -3,7 +3,7 @@ pandas
 openpyxl
 mysql-connector-python
 pdfplumber
-pywin32
 xlrd
 fuzzywuzzy
 python-Levenshtein
+# pywin32  # Only required on Windows. Remove this line for Linux-based environments.
