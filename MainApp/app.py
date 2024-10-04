@@ -248,6 +248,10 @@ def main():
     st.sidebar.header("Upload File")
     uploaded_file = st.sidebar.file_uploader("Upload an Excel or PDF file", type=["xlsx", "pdf"])
 
+    if st.sidebar.button("See Your Data"):
+        # Replace with the actual link to your admin panel
+        st.markdown("[Go to Admin Panel](https://toolfe.com/apexdemo/dashboard/index.php)", unsafe_allow_html=True)
+
 
     if uploaded_file is not None:
         # Determine file extension
