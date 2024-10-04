@@ -26,7 +26,7 @@ column_mapping = {
 
 # SQL database connection details
 DB_CONFIG =  {
-                        'host': 'srv1508.hstgr.io',
+                        'host': '110.224.95.196',
                         'user': 'u840048117_Apex_demo',
                         'password': 'Toolfe@min10!',
                         'database': 'u840048117_Apex_demo'
