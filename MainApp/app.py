@@ -250,7 +250,7 @@ def main():
 
     if st.sidebar.button("See Your Data"):
         # Replace with the actual link to your admin panel
-        st.markdown("[Go to Admin Panel](https://toolfe.com/apexdemo/dashboard/index.php)", unsafe_allow_html=True)
+        st.sidebar.markdown("[Go to Admin Panel](https://toolfe.com/apexdemo/dashboard/index.php)", unsafe_allow_html=True)
 
 
     if uploaded_file is not None:
