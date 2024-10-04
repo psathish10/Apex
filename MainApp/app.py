@@ -28,7 +28,7 @@ column_mapping = {
 DB_CONFIG =  {
                         'host': 'srv1508.hstgr.io',
                         'user': 'u840048117_Apex_demo',
-                        'password': 'Toolfe@min10!',
+                        'password': 'Tool@min10!',
                         'database': 'u840048117_Apex_demo'
                     }
 
