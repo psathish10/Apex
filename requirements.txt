@@ -1,9 +1,0 @@
-streamlit
-pandas
-openpyxl
-mysql-connector-python
-pdfplumber
-
-xlrd
-fuzzywuzzy
-python-Levenshtein
