@@ -1,11 +1,11 @@
 <?php
-$servername = "srv1508.hstgr.io";
-$username = "u840048117_Apex_demo";
-$password = "Tool@min10!";
+$servername = "localhost";
+$username = "root";
+$password = "";
 $dbname = "u840048117_Apex_demo";
 
 // Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $username,"", $dbname);
 
 // Check connection
 if ($conn->connect_error) {
