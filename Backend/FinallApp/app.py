@@ -6,7 +6,8 @@ from pdfModules import *
 from excel_module import extract_excel_tables, insert_excel_data_into_mysql
 from word_module import extract_text_from_doc, process_structured_data_with_product_names, insert_word_data_into_db
 import base64
-import time
+
+
 
 # Set page configuration
 st.set_page_config(page_title="Data Processing App", page_icon="📊", layout="wide")
@@ -43,17 +44,14 @@ st.markdown("""
     }
     .stButton>button {
         background-color: #ff4d4d;
-        color: white;
+        color: white !important;
         border-radius: 5px;
         border: none;
         padding: 10px 24px;
         font-weight: bold;
-        transition: 0.3s;
+    
     }
-    .stButton>button:hover {
-        background-color: #ff0000;
-        transform: scale(1.05);
-    }
+   
     .footer {
         position: fixed;
         left: 0;
@@ -76,21 +74,19 @@ st.markdown("""
         width: 100%;
     }
     .admin-link {
-        position: absolute;
+        position: left;
         right: 10px;
-        background-color: #ff4d4d;
-        color: white;
+      
+        color: white !important;
         padding: 10px 20px;
-        border-radius: 50px;
-        border: 2px solid white;
+        border-radius: 5px;
+        border: 1px solid white;
         font-weight: bold;
         text-align: center;
         text-decoration: none;
         transition: background-color 0.3s;
     }
-    .admin-link:hover {
-        background-color: #ff0000;
-    }
+   
     table {
         width: 100%;
         border-collapse: collapse;
@@ -202,6 +198,7 @@ def excel_processor(file):
         st.toast("🎉 Excel file processed successfully!📊")
         if st.button("Insert Excel Data into MySQL", key='excel_insert'):
             with st.spinner("Inserting data into MySQL..."):
+                rows_inserted = insert_excel_data_into_mysql(df)
                 st.toast(f"🎉 Successfully inserted 📊Excel file data!")
 
         st.dataframe(df)
@@ -229,13 +226,17 @@ def main():
     uploaded_file = st.sidebar.file_uploader("Upload your file", type=["pdf", "xlsx", "doc"])
    
     # Title at the center
-    st.title("Apex Laboratories Demo Application")
+    st.markdown("""
+    <h1 style='text-align: center;'>
+        Apex <span style='color: red;'>x</span> Toolfe
+    </h1>
+    """, unsafe_allow_html=True)
     st.sidebar.markdown("""<a href='http://localhost/apex/Frontend/apexdemo/dashboard/' class="admin-link">Admin Panel</a>""", unsafe_allow_html=True)
 
     # Welcome message
     st.markdown("""
-    <h4 style='color: white;'>Transform Documents into Actionable Data Instantly</h4>
-    <p style='color: #000000;'>This tool allows you to process PDF, Excel, and Word documents with ease.</p>
+    <h4 style='color: white;'>Transform Documents into Actionable Data Instantly - Demo</h4>
+
     """, unsafe_allow_html=True)
     
     # File processing logic
@@ -255,7 +256,7 @@ def main():
     # Footer
     st.markdown("""
     <div class="footer" style='color':'#01071A'>
-        Powered by Toolfe
+       Form Generator, apex laboratories Pvt. Ltd.
     </div>
     """, unsafe_allow_html=True)
 
