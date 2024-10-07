@@ -58,7 +58,7 @@ def insert_excel_data_into_mysql(df):
         'host': 'localhost',
         'user': 'root',
         'password': '',
-        'database': 'apex'
+        'database': 'u840048117_Apex_demo'
     }
     
     insert_query = """

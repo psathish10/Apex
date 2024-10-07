@@ -688,7 +688,7 @@ if (document.querySelectorAll("#ethernet-chart-01").length) {
       name: "Desktops",
        data: [5, 30, 6, 20, 5, 18, 10]
   }],
-  colors: ["#3a57e8"],
+  colors: ["#fc3329"],
     chart: {
     height: 60,
     sparkline: {

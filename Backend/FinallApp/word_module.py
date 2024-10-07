@@ -15,7 +15,7 @@ DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
     'password': '',
-    'database': 'apex'
+    'database': 'u840048117_Apex_demo'
 }
 
 def extract_text_from_doc(file):
@@ -95,7 +95,7 @@ def insert_word_data_into_db(df):
 
         for index, row in df.iterrows():
             values = (
-                'CODE', row['Stockist Name'], 'BILL_NO', 'CHEMIST_CODE',
+                '2001', row['Stockist Name'], 'BILL_NO', 'CHEMIST_CODE',
                 row['Customer Name'], 'ADDRESS', 'CITY', row['Pin'],
                 'MATERIAL_CODE', row['Product Name'], 'BATCH_NO',
                 row['Qty'], 0, row['Gross Amt'], row['Net Amt'],

@@ -8,7 +8,7 @@ def connect_to_mysql():
         host='localhost',
         user='root',
         password='',  # Add your password here if applicable
-        database='apex'
+        database='u840048117_Apex_demo'
     )
 
 # Function to insert data into the MySQL table
@@ -30,7 +30,7 @@ def insert_into_mysql(df, connection):
         bill_date = pd.to_datetime(row['Bill Date'], format='%d-%m-%Y', errors='coerce')
         bill_date_str = bill_date.strftime('%Y-%m-%d') if pd.notna(bill_date) else None
         cursor.execute(insert_query, (
-            'STK001',  # Stockist_Code (you can replace it with actual data if available)
+            '1007',  # Stockist_Code (you can replace it with actual data if available)
             'PURANI HOSPITAL SUPPLIES PVT LTD',  # Stockist_Name
             row['Bill No'],  # Bill_No
             bill_date_str,  # Bill_Date
