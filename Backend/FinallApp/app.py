@@ -6,6 +6,7 @@ from pdfModules import *
 from excel_module import extract_excel_tables, insert_excel_data_into_mysql
 from word_module import extract_text_from_doc, process_structured_data_with_product_names, insert_word_data_into_db
 import base64
+import datetime
 
 
 
@@ -110,6 +111,37 @@ st.markdown("""
         overflow-x: auto;
         padding: 20px;
     }
+            /* Style for the date picker widget */
+    div[role="radiogroup"] label {
+        font-size: 20px;
+        color: #4B0082;  /* Change the text color of the date picker */
+    }
+
+    input[type="date"] {
+        border-radius: 10px;
+        padding: 8px;
+        font-size: 16px;
+        border: 2px solid red; /* Change border color */
+        background-color:  #ff4d4d; /* Light background color */
+    }
+    
+    .stDateInput label {
+        font-size: 20px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .stDateInput input {
+        border: 2px solid #ffffff;
+        border-radius: 8px;
+        padding: 8px;
+    }
+
+    /* Change hover style */
+    input[type="date"]:hover {
+        border-color: #FF4500;
+        background-color: #FFFAF0;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -120,7 +152,7 @@ def load_logo():
     return base64.b64encode(data).decode()
 
 # PDF Processor
-def pdf_processor(pdf_file):
+def pdf_processor(pdf_file,from_date,to_date):
     with st.spinner("Processing PDF file..."):
         table, product_info = extract_text_and_build_table(pdf_file)
 
@@ -177,7 +209,7 @@ def pdf_processor(pdf_file):
                 connection = connect_to_mysql()
                 if connection:
                     try:
-                        rows_inserted = insert_into_mysql(final, connection)
+                        rows_inserted = insert_into_mysql(final, connection,from_date,to_date)
                         st.toast(f"🎉Successfully inserted 📄PDF file data!")
                     except Exception as e:
                         st.error(f"Error: {e}")
@@ -190,7 +222,7 @@ def pdf_processor(pdf_file):
         st.dataframe(final)
 
 # Excel Processor
-def excel_processor(file):
+def excel_processor(file,from_date,to_date):
     with st.spinner("Processing Excel file..."):
         df = extract_excel_tables(file)
     
@@ -198,13 +230,13 @@ def excel_processor(file):
         st.toast("🎉 Excel file processed successfully!📊")
         if st.button("Insert Excel Data into MySQL", key='excel_insert'):
             with st.spinner("Inserting data into MySQL..."):
-                rows_inserted = insert_excel_data_into_mysql(df)
+                rows_inserted = insert_excel_data_into_mysql(df,from_date,to_date)
                 st.toast(f"🎉 Successfully inserted 📊Excel file data!")
 
         st.dataframe(df)
 
 # Word Processor
-def word_processor(uploaded_file):
+def word_processor(uploaded_file,from_date,to_date):
     with st.spinner("Processing Word file..."):
         extracted_text = extract_text_from_doc(uploaded_file)
     
@@ -213,7 +245,7 @@ def word_processor(uploaded_file):
         st.toast("🎉 Word file processed successfully!📘")
         if st.button("Insert Word Data into MySQL", key='word_insert'):
             with st.spinner("Inserting data into MySQL..."):
-                rows_inserted = insert_word_data_into_db(df)
+                rows_inserted = insert_word_data_into_db(df,from_date,to_date)
                 st.toast(f"🎉 Successfully inserted 📘Word file data!")
 
         st.dataframe(df)
@@ -222,6 +254,7 @@ def word_processor(uploaded_file):
 def main():
     # Sidebar configuration
     logo = load_logo()
+
     st.sidebar.markdown(f"<div class='sidebar-content'><img src='data:image/png;base64,{logo}'/><h2 style='color: white;'>📁 File Upload</h2></div>", unsafe_allow_html=True)
     uploaded_file = st.sidebar.file_uploader("Upload your file", type=["pdf", "xlsx", "doc"])
    
@@ -238,6 +271,16 @@ def main():
     <h4 style='color: white;'>Transform Documents into Actionable Data Instantly - Demo</h4>
 
     """, unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
+
+    with col1:
+        from_date = st.date_input("From Date", datetime.date.today())
+        from_date_str = from_date.strftime('%Y-%m-%d')
+
+    with col2:
+        to_date = st.date_input("To Date", datetime.date.today())
+        to_date_str = to_date.strftime('%Y-%m-%d') 
+        print("from Datedfd:",from_date_str,"To Date:",to_date_str)
     
     # File processing logic
     if uploaded_file is not None:
@@ -245,11 +288,11 @@ def main():
         st.info(f"Processing {file_extension.upper()} file: {uploaded_file.name}")
         
         if file_extension == "pdf":
-            pdf_processor(uploaded_file)
+            pdf_processor(uploaded_file,from_date_str,to_date_str)
         elif file_extension == "xlsx":
-            excel_processor(uploaded_file)
+            excel_processor(uploaded_file,from_date_str,to_date_str)
         elif file_extension == "doc":
-            word_processor(uploaded_file)
+            word_processor(uploaded_file,from_date_str,to_date_str)
         else:
             st.error("Unsupported file type. Please upload a PDF, Excel, or Word file.")
 

@@ -12,7 +12,7 @@ def connect_to_mysql():
     )
 
 # Function to insert data into the MySQL table
-def insert_into_mysql(df, connection):
+def insert_into_mysql(df, connection,from_date,to_date):
     cursor = connection.cursor()
 
     # SQL query to insert data into the MySQL salesdata table
@@ -21,8 +21,8 @@ def insert_into_mysql(df, connection):
             Stockist_Code, Stockist_Name, Bill_No, Bill_Date, 
             Chemist_Code, Chemist_Name, Address, City, 
             Pin_Code, Material_Code, Material_Name, Batch_No, 
-            Sale_Qty, Free_Qty, Rate, Value
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            Sale_Qty, Free_Qty, Rate, Value,from_date, to_date
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     
     # Loop through the dataframe and insert each row
@@ -45,7 +45,9 @@ def insert_into_mysql(df, connection):
             row['Qty'],  # Sale_Qty
             row['Free'],  # Free_Qty
             row['PTS'],  # Rate
-            row['TotSales']  # Value
+            row['TotSales'] ,
+            from_date,
+            to_date
         ))
 
     # Commit the transaction

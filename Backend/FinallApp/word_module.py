@@ -74,7 +74,7 @@ def process_structured_data_with_product_names(text):
             })
     return pd.DataFrame(data)
 
-def insert_word_data_into_db(df):
+def insert_word_data_into_db(df,from_date, to_date):
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
@@ -84,12 +84,12 @@ def insert_word_data_into_db(df):
             Stockist_Code, Stockist_Name, Bill_No, Bill_Date, 
             Chemist_Code, Chemist_Name, Address, City, 
             Pin_Code, Material_Code, Material_Name, Batch_No, 
-            Sale_Qty, Free_Qty, Rate, Value
+            Sale_Qty, Free_Qty, Rate, Value, from_date, to_date
         ) VALUES (
             %s, %s, %s, CURDATE(), 
             %s, %s, %s, %s, 
             %s, %s, %s, %s, 
-            %s, %s, %s, %s
+            %s, %s, %s, %s, %s, %s
         )
         """
 
@@ -98,7 +98,7 @@ def insert_word_data_into_db(df):
                 '2001', row['Stockist Name'], 'BILL_NO', 'CHEMIST_CODE',
                 row['Customer Name'], 'ADDRESS', 'CITY', row['Pin'],
                 'MATERIAL_CODE', row['Product Name'], 'BATCH_NO',
-                row['Qty'], 0, row['Gross Amt'], row['Net Amt'],
+                row['Qty'], 0, row['Gross Amt'], row['Net Amt'],from_date, to_date
             )
             cursor.execute(insert_query, values)
 

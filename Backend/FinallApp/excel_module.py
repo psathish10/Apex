@@ -53,7 +53,7 @@ def extract_excel_tables(file):
         st.error(f"Error occurred: {e}")
         return None
 
-def insert_excel_data_into_mysql(df):
+def insert_excel_data_into_mysql(df,from_date, to_date):
     db_config = {
         'host': 'localhost',
         'user': 'root',
@@ -64,8 +64,8 @@ def insert_excel_data_into_mysql(df):
     insert_query = """
     INSERT INTO salesdata (Stockist_Code, Stockist_Name, Bill_No, Bill_Date, Chemist_Code, 
                           Chemist_Name, Address, City, Pin_Code, Material_Code, 
-                          Material_Name, Batch_No, Sale_Qty, Free_Qty, Rate, Value)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                          Material_Name, Batch_No, Sale_Qty, Free_Qty, Rate, Value,from_date,to_date)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
     
     rows_inserted = 0
@@ -79,7 +79,7 @@ def insert_excel_data_into_mysql(df):
                 "1232", "KAMALAM MEDICAL CORPORATION", row.get('Bill No'), row.get('Bill Date'),
                 row.get('Cust Code'), row.get('Customer Name'), row.get('Address'),
                 row.get('Area Name'), row.get('Pin Code'), 'Material Code', row.get('Product Name'),
-                row.get('Batch No'), row.get('Qty'), row.get('Free'), row.get('Rate'), row.get('Amount')
+                row.get('Batch No'), row.get('Qty'), row.get('Free'), row.get('Rate'), row.get('Amount'),from_date,to_date
             )
             cursor.execute(insert_query, values)
             rows_inserted += 1

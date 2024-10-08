@@ -12,7 +12,7 @@ if (!isset($_SESSION['admin_id'])) {
 include '../db(1).php';
 
 // Query to fetch data from the updated table
-$sql = "SELECT `id`, `Stockist_Code`, `Stockist_Name`, `Bill_No`, `Bill_Date`, `Chemist_Code`, `Chemist_Name`, `Address`, `City`, `Pin_Code`, `Material_Code`, `Material_Name`, `Batch_No`, `Sale_Qty`, `Free_Qty`, `Rate`, `Value` FROM `salesdata` ORDER BY id DESC";
+$sql = "SELECT `id`, `Stockist_Code`, `Stockist_Name`, `Bill_No`, `Bill_Date`, `Chemist_Code`, `Chemist_Name`, `Address`, `City`, `Pin_Code`, `Material_Code`, `Material_Name`, `Batch_No`, `Sale_Qty`, `Free_Qty`, `Rate`, `Value`,`from_date`,`to_date` FROM `salesdata` ORDER BY id DESC";
 $result = $conn->query($sql);
 
 // Check for query errors
@@ -62,6 +62,8 @@ include '../includes/header.php';
                               <th>Rate</th>
                               <th>Value</th>
                               <th>Action</th>
+                              <th> From Date</th>
+                              <th>To Date</th>
                            </tr>
                         </thead>
                         <tbody>
@@ -88,6 +90,8 @@ include '../includes/header.php';
                               <td><?php echo htmlspecialchars($row["Free_Qty"]); ?></td>
                               <td><?php echo htmlspecialchars($row["Rate"]); ?></td>
                               <td><?php echo htmlspecialchars($row["Value"]); ?></td>
+                              <td><?php echo htmlspecialchars($row["from_date"]); ?></td>
+                              <td><?php echo htmlspecialchars($row["to_date"]); ?></td>
                               <td>
                                     <form method="POST" action="delete-data.php" onsubmit="return confirm('Are you sure you want to delete this entry?');">
                                        <input type="hidden" name="table" value="salesdata">
