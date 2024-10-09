@@ -7,6 +7,7 @@ from excel_module import extract_excel_tables, insert_excel_data_into_mysql
 from word_module import extract_text_from_doc, process_structured_data_with_product_names, insert_word_data_into_db
 import base64
 import datetime
+from pdfchat import chat_with_pdf
 
 
 
@@ -88,29 +89,7 @@ st.markdown("""
         transition: background-color 0.3s;
     }
    
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    th {
-        background-color: #d3d3d3;
-        color: black;
-        text-align: center;
-        padding: 10px;
-        border: 1px solid #a0a0a0;
-    }
-    td {
-        background-color: #f9f9f9;
-        padding: 10px;
-        border: 1px solid #a0a0a0;
-    }
-    .dataframe-container {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        overflow-x: auto;
-        padding: 20px;
-    }
+   
             /* Style for the date picker widget */
     div[role="radiogroup"] label {
         font-size: 20px;
@@ -251,57 +230,71 @@ def word_processor(uploaded_file,from_date,to_date):
         st.dataframe(df)
 
 # Main Function
+# Main Function
 def main():
     # Sidebar configuration
     logo = load_logo()
 
     st.sidebar.markdown(f"<div class='sidebar-content'><img src='data:image/png;base64,{logo}'/><h2 style='color: white;'>📁 File Upload</h2></div>", unsafe_allow_html=True)
-    uploaded_file = st.sidebar.file_uploader("Upload your file", type=["pdf", "xlsx", "doc"])
-   
-    # Title at the center
-    st.markdown("""
-    <h1 style='text-align: center;'>
-        Apex <span style='color: red;'>x</span> Toolfe
-    </h1>
-    """, unsafe_allow_html=True)
-    st.sidebar.markdown("""<a href='http://localhost/apex/Frontend/apexdemo/dashboard/' class="admin-link">Admin Panel</a>""", unsafe_allow_html=True)
-
-    # Welcome message
-    st.markdown("""
-    <h4 style='color: white;'>Transform Documents into Actionable Data Instantly - Demo</h4>
-
-    """, unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-
-    with col1:
-        from_date = st.date_input("From Date", datetime.date.today())
-        from_date_str = from_date.strftime('%Y-%m-%d')
-
-    with col2:
-        to_date = st.date_input("To Date", datetime.date.today())
-        to_date_str = to_date.strftime('%Y-%m-%d') 
-        print("from Datedfd:",from_date_str,"To Date:",to_date_str)
     
-    # File processing logic
-    if uploaded_file is not None:
-        file_extension = uploaded_file.name.split(".")[-1].lower()
-        st.info(f"Processing {file_extension.upper()} file: {uploaded_file.name}")
-        
-        if file_extension == "pdf":
-            pdf_processor(uploaded_file,from_date_str,to_date_str)
-        elif file_extension == "xlsx":
-            excel_processor(uploaded_file,from_date_str,to_date_str)
-        elif file_extension == "doc":
-            word_processor(uploaded_file,from_date_str,to_date_str)
-        else:
-            st.error("Unsupported file type. Please upload a PDF, Excel, or Word file.")
+    # Chat with PDF checkbox in the sidebar
+    chat_option = st.sidebar.checkbox("Chat with PDF 🤖")
 
-    # Footer
-    st.markdown("""
-    <div class="footer" style='color':'#01071A'>
-       Form Generator, apex laboratories Pvt. Ltd.
-    </div>
-    """, unsafe_allow_html=True)
+    if chat_option:
+        # If "Chat with PDF" is checked, display the chat functionality
+        # Replace the file uploader with the chat upload button
+        uploaded_file = st.sidebar.file_uploader("Upload your PDF for chat", type="pdf", key='pdf_chat_upload')
+        
+        # Call the chat_with_pdf function to display the chat interface
+        chat_with_pdf(uploaded_file)
+
+    else:
+        # Title at the center
+        st.markdown("""
+        <h1 style='text-align: center;'>
+            Apex <span style='color: red;'>x</span> Toolfe
+        </h1>
+        """, unsafe_allow_html=True)
+
+        st.sidebar.markdown("""<a href='http://localhost/apex/Frontend/apexdemo/dashboard/' class="admin-link">Admin Panel</a>""", unsafe_allow_html=True)
+
+        # Welcome message
+        st.markdown("""
+        <h4 style='color: white;'>Transform Documents into Actionable Data Instantly - Demo</h4>
+        """, unsafe_allow_html=True)
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            from_date = st.date_input("From Date", datetime.date.today())
+            from_date_str = from_date.strftime('%Y-%m-%d')
+
+        with col2:
+            to_date = st.date_input("To Date", datetime.date.today())
+            to_date_str = to_date.strftime('%Y-%m-%d') 
+
+        # File processing logic
+        uploaded_file = st.sidebar.file_uploader("Upload your file", type=["pdf", "xlsx", "doc"])
+
+        if uploaded_file is not None:
+            file_extension = uploaded_file.name.split(".")[-1].lower()
+            st.info(f"Processing {file_extension.upper()} file: {uploaded_file.name}")
+            
+            if file_extension == "pdf":
+                pdf_processor(uploaded_file, from_date_str, to_date_str)
+            elif file_extension == "xlsx":
+                excel_processor(uploaded_file, from_date_str, to_date_str)
+            elif file_extension == "doc":
+                word_processor(uploaded_file, from_date_str, to_date_str)
+            else:
+                st.error("Unsupported file type. Please upload a PDF, Excel, or Word file.")
+
+        # Footer
+        st.markdown("""
+        <div class="footer" style='color':'#01071A'>
+            Form Generator, apex laboratories Pvt. Ltd.
+        </div>
+        """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
